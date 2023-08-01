@@ -1,0 +1,11 @@
+.contact-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+.contact-list {
+  list-style-type: none;
+  width: 400px;
+  max-width: 100%;
+}

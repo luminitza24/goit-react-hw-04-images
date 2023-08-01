@@ -1,0 +1,53 @@
+.form {
+  margin-left: 30px;
+  display: flex;
+  flex-direction: column;
+  width: 350px;
+  max-width: 100%;
+  gap: 10px;
+  justify-content: center;
+  align-items: center;
+}
+
+.label {
+  padding-right: 30px;
+  font-weight: 600px;
+}
+
+.input {
+  margin-left: 30px;
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.input:hover {
+  border-color: #888;
+}
+
+.input:focus {
+  outline: none;
+  border-color: #555;
+  box-shadow: 0 0 5px rgba(85, 85, 85, 0.3);
+}
+
+.button {
+  margin-left: 30px;
+  margin-bottom: 20px;
+  padding: 5px 15px;
+  font-size: 16px;
+  font-weight: bold;
+  text-align: center;
+  text-decoration: none;
+  border-radius: 10px;
+  border: none;
+  background-color: burlywood;
+  color: #fff;
+}
+
+.phonebookForm button:hover,
+.phonebookForm button:active {
+  background-color: #45a049;
+  cursor: pointer;
+}
