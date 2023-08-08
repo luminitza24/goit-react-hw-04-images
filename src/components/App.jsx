@@ -52,7 +52,7 @@ export const App = () => {
   const handleLoadMore = async () => {
     const nextPage = page + 1;
     setIsLoading(true);
-    setSearch(searchTerm);
+
     try {
       const data = await searchImage(searchTerm, nextPage);
       const newImages = [...images, ...data.hits];

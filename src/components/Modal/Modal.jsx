@@ -1,13 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import './Modal.css';
 
-export const Modal = ([imageURL, tag]) => {
-  const [closeModal, setCloseModal] = useState(false);
-
+export const Modal = ({ imageURL, tag, closeModal }) => {
   const handleKeyDown = e => {
     if (e.key === 'Escape') {
-      setCloseModal(true);
+      closeModal();
     }
   };
   useEffect(() => {
@@ -17,7 +15,7 @@ export const Modal = ([imageURL, tag]) => {
     };
   });
   return (
-    <div className="Overlay" onClick={closeModal}>
+    <div className="Overlay" onClick={() => closeModal()}>
       <div className="Modal" onClick={e => e.stopPropagation()}>
         <img src={imageURL} alt={tag} />
       </div>
