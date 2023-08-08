@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import { useState, useEffect } from 'react';
 import './App.css';
 import { searchImage } from './api/apiPixabay';
 import { Searchbar } from './Searchbar/Searchbar';
@@ -8,116 +8,94 @@ import { Loader } from './Loader/Loader';
 import { Modal } from './Modal/Modal';
 import Notiflix from 'notiflix';
 
-export class App extends Component {
-  constructor() {
-    super();
-    this.state = {
-      search: '',
-      emptyInput: false,
-      images: [],
-      page: 1,
-      total: 1,
-      isLoading: false,
-      error: null,
-      modalIsVisible: false,
-      selectedImages: null,
-    };
-    this.openModal = this.openModal.bind(this);
-    this.closeModal = this.closeModal.bind(this);
-  }
+export const App = () => {
+  const [searchTerm, setSearch] = useState('');
+  const [emptyInput, setEmptyInput] = useState(false);
+  const [images, setImages] = useState([]);
+  const [page, setPage] = useState(1);
+  const [total, setTotal] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [modalIsVisible, setModalIsVisible] = useState(false);
+  const [selectedImages, setSelectedImages] = useState(null);
 
-  componentDidUpdate(prevProps, prevState) {
-    const { search: prevSearch } = prevState;
-    const { search: newSearch } = this.state;
-
-    if (newSearch !== prevSearch) {
-      this.handleSearch(newSearch);
+  useEffect(() => {
+    const newSearch = '';
+    if (newSearch !== setSearch(searchTerm)) {
+      handleSearch(newSearch);
     }
-  }
-  handleSearch = async searchTerm => {
+  }, [searchTerm]);
+  const handleSearch = async searchTerm => {
     if (searchTerm.trim().length === 0) {
-      this.setState({ emptyInput: true });
+      setEmptyInput(true);
       return;
     }
-    this.setState({
-      search: searchTerm,
-      emptyInput: false,
-      page: 1,
-      images: [],
-      isLoading: true,
-      error: null,
-      total: 1,
-    });
+    setSearch(searchTerm);
+    setEmptyInput(false);
+    setPage(1);
+    setImages([]);
+    setIsLoading(true);
+    setError(null);
+    setTotal(1);
 
     try {
       const data = await searchImage(searchTerm, 1);
-      this.setState({
-        images: data.hits,
-        total: data.total,
-        isLoading: false,
-      });
+      setImages(data.hits);
+      setTotal(data.total);
+      setIsLoading(false);
     } catch (error) {
-      this.setState({
-        error,
-        isLoading: false,
-      });
+      setError(error);
+      setIsLoading(false);
     }
   };
 
-  handleLoadMore = async () => {
-    const { search, page } = this.state;
+  const handleLoadMore = async () => {
     const nextPage = page + 1;
-    this.setState({ isLoading: true });
+    setIsLoading(true);
+    setSearch(searchTerm);
     try {
-      const data = await searchImage(search, nextPage);
-      this.setState(prevState => ({
-        images: [...prevState.images, ...data.hits],
-        page: nextPage,
-        isLoading: false,
-      }));
+      const data = await searchImage(searchTerm, nextPage);
+      const newImages = [...images, ...data.hits];
+      setImages(newImages);
+      setPage(nextPage);
+      setIsLoading(false);
     } catch (error) {
-      this.setState({ error, isLoading: false });
+      setError(error);
+      setIsLoading(false);
     }
   };
 
-  openModal(id) {
-    this.setState({
-      modalIsVisible: true,
-      selectedImages: id,
-    });
-  }
+  const openModal = id => {
+    setModalIsVisible(true);
+    setSelectedImages(id);
+  };
 
-  closeModal() {
-    this.setState({
-      modalIsVisible: false,
-      selectedImages: null,
-    });
-  }
+  const closeModal = () => {
+    setModalIsVisible(false);
+    setSelectedImages(null);
+  };
 
-  render() {
-    const { images, isLoading, error, emptyInput, total, page } = this.state;
-    return (
-      <div className="App">
-        <Searchbar onSearch={this.handleSearch} />
-        {emptyInput && Notiflix.Notify.failure('Please insert search term!')}
-        {error &&
-          Notiflix.Notify.failure(
-            'Ops something went wrong please try again later!'
-          )}
-        {isLoading && <Loader />}
-        {images.length > 0 && (
-          <ImageGallery openModal={this.openModal} images={images} />
+  return (
+    <div className="App">
+      <Searchbar onSearch={handleSearch} />
+      {emptyInput && Notiflix.Notify.failure('Please insert search term!')}
+      {error &&
+        Notiflix.Notify.failure(
+          'Ops something went wrong please try again later!'
         )}
-        {total / 12 > page && <Button loadMore={this.handleLoadMore} />}
-        {this.state.modalIsVisible && this.state.selectedImages && (
-          <Modal
-            openModal={this.openModal}
-            imageURL={this.state.selectedImages.largeImageURL}
-            tag={this.state.selectedImages.tags}
-            closeModal={this.closeModal}
-          />
-        )}
-      </div>
-    );
-  }
-}
+      {isLoading && <Loader />}
+      {images.length > 0 && (
+        <ImageGallery openModal={openModal} images={images} />
+      )}
+      {total / 12 > page && <Button loadMore={handleLoadMore} />}
+      {modalIsVisible && selectedImages && (
+        <Modal
+          openModal={openModal}
+          imageURL={selectedImages.largeImageURL}
+          tag={selectedImages.tags}
+          closeModal={closeModal}
+        />
+      )}
+    </div>
+  );
+};

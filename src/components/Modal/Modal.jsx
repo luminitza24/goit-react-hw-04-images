@@ -1,33 +1,29 @@
-import React, { Component } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import './Modal.css';
 
-export class Modal extends Component {
-  componentDidMount() {
-    document.addEventListener('keydown', this.handleKeyDown);
-  }
+export const Modal = ([imageURL, tag]) => {
+  const [closeModal, setCloseModal] = useState(false);
 
-  componentWillUnmount() {
-    document.removeEventListener('keydown', this.handleKeyDown);
-  }
-
-  handleKeyDown = e => {
+  const handleKeyDown = e => {
     if (e.key === 'Escape') {
-      this.props.closeModal();
+      setCloseModal(true);
     }
   };
-
-  render() {
-    const { imageURL, tag, closeModal } = this.props;
-    return (
-      <div className="Overlay" onClick={closeModal}>
-        <div className="Modal" onClick={e => e.stopPropagation()}>
-          <img src={imageURL} alt={tag} />
-        </div>
+  useEffect(() => {
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      return document.removeEventListener('keydown', handleKeyDown);
+    };
+  });
+  return (
+    <div className="Overlay" onClick={closeModal}>
+      <div className="Modal" onClick={e => e.stopPropagation()}>
+        <img src={imageURL} alt={tag} />
       </div>
-    );
-  }
-}
+    </div>
+  );
+};
 
 Modal.propTypes = {
   imageURL: PropTypes.string.isRequired,
